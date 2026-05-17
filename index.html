@@ -3,18 +3,19 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Pak Pink Jai 🌿 - V2</title>
+    <title>Pak Pink Jai 🌿 - Full Version</title>
     <style>
         :root {
             --bg-color: #f4f7f6;
             --card-bg: #ffffff;
             --primary: #4a6b53;
+            --primary-light: #ebf2ee;
             --text-dark: #2c3e35;
             --text-muted: #889990;
             --danger: #e07a5f;
             --warning: #f2cc8f;
             --success: #81b29a;
-            --radius: 24px;
+            --radius: 20px;
         }
 
         * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; -webkit-tap-highlight-color: transparent; }
@@ -27,71 +28,79 @@
             position: relative;
             overflow-x: hidden;
             box-shadow: 0 0 20px rgba(0,0,0,0.05);
+            min-height: 100vh;
         }
 
         .screen { display: none; flex-direction: column; height: 100vh; padding: 32px 24px; text-align: center; justify-content: center; animation: fadeIn 0.4s ease; }
         .screen.active { display: flex; }
 
-        @keyframes fadeIn { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(15px); } to { opacity: 1; transform: translateY(0); } }
 
         /* Typography & UI */
-        h1 { font-size: 1.8rem; margin-bottom: 8px; color: var(--text-dark); }
-        p.subtitle { color: var(--text-muted); font-size: 1rem; margin-bottom: 40px; }
+        h1 { font-size: 1.6rem; margin-bottom: 8px; color: var(--text-dark); }
+        p.subtitle { color: var(--text-muted); font-size: 0.95rem; margin-bottom: 24px; }
         
-        .btn-next {
-            background: var(--primary); color: white; border: none; padding: 16px; border-radius: 16px; font-size: 1.1rem; font-weight: bold; cursor: pointer; width: 100%; margin-top: auto; transition: 0.2s;
+        .btn-next, .btn-primary {
+            background: var(--primary); color: white; border: none; padding: 16px; border-radius: 16px; font-size: 1.1rem; font-weight: bold; cursor: pointer; width: 100%; transition: 0.2s;
         }
+        .btn-next { margin-top: auto; }
         .btn-next:disabled { background: #ccc; cursor: not-allowed; }
-        .btn-next:active { transform: scale(0.98); }
+        .btn-next:active, .btn-primary:active { transform: scale(0.98); }
 
-        /* Step 1: Mood Grid */
-        .mood-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+        /* Step 1: Mood Grid (Updated for 8 Items) */
+        .mood-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px; margin-bottom: 16px;}
         .mood-card {
-            background: var(--card-bg); border: 2px solid transparent; border-radius: var(--radius); padding: 32px 16px; cursor: pointer; transition: 0.2s;
+            background: var(--card-bg); border: 2px solid transparent; border-radius: 16px; padding: 20px 12px; cursor: pointer; transition: 0.2s; display: flex; flex-direction: column; align-items: center; justify-content: center;
         }
-        .mood-card .emoji { font-size: 3.5rem; margin-bottom: 12px; display: block; }
-        .mood-card .label { font-weight: bold; font-size: 1.1rem; }
-        .mood-card.selected { border-color: var(--primary); background: #ebf2ee; transform: scale(1.05); }
+        .mood-card .emoji { font-size: 2.5rem; margin-bottom: 8px; display: block; }
+        .mood-card .label { font-weight: bold; font-size: 0.95rem; }
+        .mood-card.selected { border-color: var(--primary); background: var(--primary-light); transform: scale(1.05); }
 
         /* Step 2: Energy Slider */
         .battery-icon { font-size: 5rem; margin-bottom: 24px; transition: 0.3s; }
         .energy-val { font-size: 3rem; font-weight: bold; color: var(--primary); margin-bottom: 24px; }
-        input[type=range] {
-            -webkit-appearance: none; width: 100%; margin: 20px 0; background: transparent;
-        }
-        input[type=range]::-webkit-slider-runnable-track {
-            width: 100%; height: 12px; cursor: pointer; background: #ddd; border-radius: 10px;
-        }
-        input[type=range]::-webkit-slider-thumb {
-            height: 32px; width: 32px; border-radius: 50%; background: var(--primary); cursor: pointer; -webkit-appearance: none; margin-top: -10px; box-shadow: 0 4px 10px rgba(0,0,0,0.2);
-        }
+        input[type=range] { -webkit-appearance: none; width: 100%; margin: 20px 0; background: transparent; }
+        input[type=range]::-webkit-slider-runnable-track { width: 100%; height: 12px; cursor: pointer; background: #ddd; border-radius: 10px; }
+        input[type=range]::-webkit-slider-thumb { height: 32px; width: 32px; border-radius: 50%; background: var(--primary); cursor: pointer; -webkit-appearance: none; margin-top: -10px; box-shadow: 0 4px 10px rgba(0,0,0,0.2); }
 
         /* Step 3: Processing */
-        .loader {
-            width: 60px; height: 60px; border: 6px solid #ebf2ee; border-top: 6px solid var(--primary); border-radius: 50%; animation: spin 1s linear infinite; margin: 0 auto 24px;
-        }
+        .loader { width: 60px; height: 60px; border: 6px solid var(--primary-light); border-top: 6px solid var(--primary); border-radius: 50%; animation: spin 1s linear infinite; margin: 0 auto 24px; }
         @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
 
-        /* Dashboard */
-        .dashboard-header { text-align: left; padding: 24px 24px 0; }
-        .score-card {
-            background: var(--card-bg); border-radius: var(--radius); padding: 32px; text-align: center; margin: 24px; box-shadow: 0 10px 30px rgba(0,0,0,0.05);
-        }
-        .score-circle {
-            width: 120px; height: 120px; border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto 16px; font-size: 3rem; font-weight: bold; color: white;
-        }
-        .insight-text { font-size: 1rem; color: var(--text-dark); margin-top: 16px; line-height: 1.5; }
-        
-        .alert-box {
-            background: #fff0f0; border-left: 4px solid var(--danger); padding: 16px; margin: 0 24px; border-radius: 12px; text-align: left; display: none;
-        }
-        .hotline-btn { display: inline-block; background: var(--danger); color: white; padding: 8px 16px; border-radius: 8px; text-decoration: none; font-weight: bold; margin-top: 8px; }
+        /* Main App Area */
+        #main-app { display: none; padding-bottom: 80px; flex-direction: column; height: 100vh; }
+        #main-app.active { display: flex; animation: fadeIn 0.5s ease; }
+        .app-header { padding: 24px 24px 16px; background: var(--bg-color); position: sticky; top: 0; z-index: 10; border-bottom: 1px solid rgba(0,0,0,0.02); }
+        .view-section { display: none; flex: 1; overflow-y: auto; padding: 0 24px 24px; }
+        .view-section.active { display: block; animation: fadeIn 0.3s ease; }
 
-        /* Simple Nav */
-        .nav-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; padding: 0 24px; margin-top: 24px; }
-        .nav-btn { background: var(--card-bg); padding: 20px; border-radius: 16px; text-align: center; text-decoration: none; color: var(--text-dark); font-weight: bold; box-shadow: 0 4px 10px rgba(0,0,0,0.02); }
-        .nav-btn .icon { font-size: 2rem; display: block; margin-bottom: 8px; }
+        /* Dashboard Cards */
+        .score-card { background: var(--card-bg); border-radius: var(--radius); padding: 32px 24px; text-align: center; margin-top: 16px; margin-bottom: 16px; box-shadow: 0 10px 30px rgba(0,0,0,0.03); }
+        .score-circle { width: 120px; height: 120px; border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto 16px; font-size: 3rem; font-weight: bold; color: white; }
+        .insight-text { font-size: 0.95rem; color: var(--text-dark); margin-top: 16px; line-height: 1.6; }
+        .alert-box { background: #fff0f0; border-left: 4px solid var(--danger); padding: 16px; margin-bottom: 16px; border-radius: 12px; text-align: left; display: none; }
+        .hotline-btn { display: inline-block; background: var(--danger); color: white; padding: 8px 16px; border-radius: 8px; text-decoration: none; font-weight: bold; margin-top: 8px; font-size: 0.9rem; }
 
+        /* Journal UI */
+        .input-box { width: 100%; padding: 16px; border: 2px solid transparent; border-radius: 16px; background: var(--card-bg); font-size: 1rem; margin-bottom: 16px; resize: none; outline: none; transition: 0.3s; margin-top: 16px; }
+        .input-box:focus { border-color: var(--primary); background: #fff; }
+        .log-item { background: var(--card-bg); padding: 16px; border-radius: 16px; margin-bottom: 12px; text-align: left; box-shadow: 0 4px 10px rgba(0,0,0,0.02); }
+        .log-header { display: flex; justify-content: space-between; margin-bottom: 8px; font-size: 0.85rem; color: var(--text-muted); }
+
+        /* Chat UI */
+        .chat-container { display: flex; flex-direction: column; gap: 12px; margin-bottom: 16px; margin-top: 16px;}
+        .chat-bubble { max-width: 85%; padding: 14px 18px; border-radius: 20px; font-size: 0.95rem; text-align: left; line-height: 1.5; }
+        .chat-bubble.bot { background: #e0e7e3; align-self: flex-start; border-bottom-left-radius: 4px; color: var(--text-dark); }
+        .chat-bubble.user { background: var(--primary); color: white; align-self: flex-end; border-bottom-right-radius: 4px; }
+        .chat-input-area { display: flex; gap: 8px; position: sticky; bottom: 0; background: var(--bg-color); padding-top: 8px; }
+        .chat-input { flex: 1; padding: 14px 20px; border-radius: 24px; border: none; background: var(--card-bg); outline: none; box-shadow: 0 4px 10px rgba(0,0,0,0.02); font-size: 1rem; }
+        .send-btn { background: var(--primary); color: white; border: none; width: 48px; height: 48px; border-radius: 50%; cursor: pointer; font-size: 1.2rem; display: flex; align-items: center; justify-content: center; }
+
+        /* Bottom Nav */
+        .bottom-nav { position: fixed; bottom: 0; left: 50%; transform: translateX(-50%); width: 100%; max-width: 480px; background: var(--card-bg); display: flex; justify-content: space-around; padding: 12px 0 20px; border-top-left-radius: 24px; border-top-right-radius: 24px; box-shadow: 0 -4px 20px rgba(0,0,0,0.04); z-index: 100; }
+        .nav-item { text-align: center; color: var(--text-muted); cursor: pointer; font-size: 0.75rem; font-weight: bold; flex: 1; transition: 0.2s; }
+        .nav-item.active { color: var(--primary); }
+        .nav-item .icon { font-size: 1.5rem; display: block; margin-bottom: 4px; }
     </style>
 </head>
 <body>
@@ -99,30 +108,47 @@
 <div id="app-container">
 
     <!-- Step 1: Mood -->
-    <div id="step-1" class="screen active">
+    <div id="step-1" class="screen active" style="justify-content: flex-start; overflow-y: auto; padding-top: 40px;">
         <h1>รู้สึกอย่างไรบ้าง?</h1>
         <p class="subtitle">เลือกสภาวะใจที่ตรงกับคุณที่สุดในตอนนี้</p>
         
+        <!-- Expanded to 8 Moods -->
         <div class="mood-grid">
-            <div class="mood-card" onclick="selectMood(this, 10, 'เครียด', '😫')">
+            <div class="mood-card" onclick="selectMood(this, 5, 'เครียด', '😫')">
                 <span class="emoji">😫</span>
-                <span class="label">เครียด / แย่</span>
+                <span class="label">เครียดหนัก</span>
             </div>
-            <div class="mood-card" onclick="selectMood(this, 25, 'เหนื่อย', '😮‍💨')">
+            <div class="mood-card" onclick="selectMood(this, 10, 'กังวล', '😰')">
+                <span class="emoji">😰</span>
+                <span class="label">กังวลใจ</span>
+            </div>
+            <div class="mood-card" onclick="selectMood(this, 10, 'โกรธ', '😠')">
+                <span class="emoji">😠</span>
+                <span class="label">โกรธ / หงุดหงิด</span>
+            </div>
+            <div class="mood-card" onclick="selectMood(this, 20, 'เศร้า', '😔')">
+                <span class="emoji">😔</span>
+                <span class="label">เศร้า / เหงา</span>
+            </div>
+            <div class="mood-card" onclick="selectMood(this, 20, 'หมดไฟ', '😮‍💨')">
                 <span class="emoji">😮‍💨</span>
-                <span class="label">เหนื่อย / หมดไฟ</span>
+                <span class="label">เหนื่อยล้า</span>
             </div>
-            <div class="mood-card" onclick="selectMood(this, 40, 'ปกติ', '🙂')">
-                <span class="emoji">🙂</span>
-                <span class="label">ปกติ / โอเค</span>
+            <div class="mood-card" onclick="selectMood(this, 35, 'ปกติ', '😐')">
+                <span class="emoji">😐</span>
+                <span class="label">เฉยๆ / ว่างเปล่า</span>
             </div>
-            <div class="mood-card" onclick="selectMood(this, 50, 'ดีมาก', '✨')">
+            <div class="mood-card" onclick="selectMood(this, 45, 'โอเค', '😌')">
+                <span class="emoji">😌</span>
+                <span class="label">โอเค / สงบ</span>
+            </div>
+            <div class="mood-card" onclick="selectMood(this, 50, 'สดใส', '✨')">
                 <span class="emoji">✨</span>
-                <span class="label">สดใส / พลังเยอะ</span>
+                <span class="label">สดใส / ดีใจ</span>
             </div>
         </div>
         
-        <button id="btn-next-1" class="btn-next" style="display: none;" onclick="goStep(2)">ไปต่อ ➔</button>
+        <button id="btn-next-1" class="btn-next" style="display: none; margin-top: 16px; margin-bottom: 24px;" onclick="goStep(2)">ไปต่อ ➔</button>
     </div>
 
     <!-- Step 2: Energy -->
@@ -147,128 +173,292 @@
     <div id="step-3" class="screen">
         <div class="loader"></div>
         <h2 style="color: var(--primary);">กำลังวิเคราะห์...</h2>
-        <p class="subtitle" style="margin-top: 8px;">ให้ AI ประเมินสภาวะใจของคุณ</p>
+        <p class="subtitle" style="margin-top: 8px;">ประมวลผลสภาวะใจของคุณ</p>
     </div>
 
-    <!-- Main Dashboard -->
-    <div id="dashboard" class="screen" style="justify-content: flex-start; padding: 24px 0;">
-        <div class="dashboard-header">
-            <h1>🌿 พักพิงใจ</h1>
-            <p style="color: var(--text-muted);">สรุปผลสุขภาพใจของคุณวันนี้</p>
+    <!-- Main Application Area -->
+    <div id="main-app">
+        
+        <!-- Header -->
+        <div class="app-header">
+            <h2 style="display: flex; align-items: center; gap: 8px; font-size: 1.4rem;">
+                🌿 พักพิงใจ 
+                <span style="font-size:0.85rem; color:var(--text-muted); font-weight:normal; margin-left:auto; cursor:pointer; background: #f0f0f0; padding: 6px 12px; border-radius: 12px;" onclick="location.reload()">🔄 เริ่มใหม่</span>
+            </h2>
         </div>
 
-        <div class="score-card">
-            <div id="final-score-circle" class="score-circle" style="background: var(--success);">
-                <span id="final-score">0</span>
+        <!-- View 1: Dashboard -->
+        <div id="view-dashboard" class="view-section active">
+            <div class="score-card">
+                <div id="final-score-circle" class="score-circle" style="background: var(--success);">
+                    <span id="final-score">0</span>
+                </div>
+                <h2 id="dashboard-mood-title">สภาวะใจ: โอเค</h2>
+                <p id="dashboard-insight" class="insight-text">กำลังโหลดข้อมูล...</p>
             </div>
-            <h2 id="dashboard-mood-title">สภาวะใจ: โอเค</h2>
-            <p id="dashboard-insight" class="insight-text">พร้อมลุยวันใหม่! พลังงานของคุณอยู่ในเกณฑ์ดีเยี่ยม รักษาสมดุลแบบนี้ไว้นะครับ</p>
+
+            <div id="alert-zone" class="alert-box">
+                <h4 style="color: var(--danger); margin-bottom: 4px;">⚠️ ตรวจพบสภาวะตึงเครียด</h4>
+                <p style="font-size: 0.9rem; margin-bottom: 8px;">ถ้าไม่ไหวมีคนพร้อมรับฟังเสมอนะ ปลอดภัยไว้ก่อน</p>
+                <a href="tel:1323" class="hotline-btn">📞 โทร 1323 (สายด่วนสุขภาพจิต)</a>
+            </div>
+            
+            <h3 style="margin: 24px 0 12px; font-size:1.1rem; color: var(--text-dark);">ทางลัดด่วน</h3>
+            <div class="mood-grid" style="gap:12px; grid-template-columns: 1fr 1fr;">
+                <div class="mood-card" style="padding:16px; text-align:center; border-radius:16px; background: #f9f9f9;" onclick="switchTab('journal')">
+                    <span class="emoji" style="font-size:2rem; margin-bottom:8px;">✍️</span>
+                    <span style="font-weight:bold; font-size:0.95rem;">ระบายความรู้สึก</span>
+                </div>
+                <div class="mood-card" style="padding:16px; text-align:center; border-radius:16px; background: #f9f9f9;" onclick="switchTab('chat')">
+                    <span class="emoji" style="font-size:2rem; margin-bottom:8px;">💬</span>
+                    <span style="font-weight:bold; font-size:0.95rem;">คุยกับ AI</span>
+                </div>
+            </div>
         </div>
 
-        <div id="alert-zone" class="alert-box">
-            <h4 style="color: var(--danger); margin-bottom: 4px;">⚠️ ตรวจพบความเครียดสูง</h4>
-            <p style="font-size: 0.9rem; margin-bottom: 8px;">ดูเหมือนวันนี้จะหนักเกินไป พักก่อนไหม? ถ้าไม่ไหวมีคนพร้อมรับฟังเสมอนะ</p>
-            <a href="tel:1323" class="hotline-btn">📞 โทร 1323 (สายด่วนสุขภาพจิต)</a>
+        <!-- View 2: Journal -->
+        <div id="view-journal" class="view-section">
+            <h2 style="margin-top: 16px;">บันทึกใจ</h2>
+            <p style="font-size: 0.9rem; color: var(--text-muted);">เขียนระบายสิ่งที่มีอยู่ในใจ พื้นที่นี้ปลอดภัย</p>
+            <textarea id="journal-input" class="input-box" rows="5" placeholder="วันนี้เจอเรื่องอะไรมาบ้าง พิมพ์บอกได้เลยนะ..."></textarea>
+            <button class="btn-primary" onclick="saveJournal()">บันทึกความรู้สึก</button>
+
+            <h3 style="margin: 32px 0 16px; font-size:1.1rem; border-top: 1px solid #eee; padding-top: 24px;">บันทึกย้อนหลัง</h3>
+            <div id="journal-history">
+                <!-- Data will load here -->
+            </div>
         </div>
 
-        <div class="nav-grid">
-            <div class="nav-btn" style="opacity: 0.5;">
+        <!-- View 3: AI Chat -->
+        <div id="view-chat" class="view-section" style="display: flex; flex-direction: column;">
+            <div class="chat-container" id="chat-box" style="flex:1;">
+                <div class="chat-bubble bot">สวัสดี ฉันคือ AI ของ Pak Pink Jai วันนี้มีเรื่องอะไรไม่สบายใจ หรืออยากเล่าให้ฟังไหม? พื้นที่นี้เป็นส่วนตัว 100% นะ</div>
+            </div>
+            
+            <div class="chat-input-area">
+                <input type="text" id="chat-input" class="chat-input" placeholder="พิมพ์ข้อความ..." onkeypress="if(event.key === 'Enter') sendChat()">
+                <button class="send-btn" onclick="sendChat()">➔</button>
+            </div>
+        </div>
+
+        <!-- Bottom Navigation -->
+        <div class="bottom-nav">
+            <div class="nav-item active" id="nav-dashboard" onclick="switchTab('dashboard')">
+                <span class="icon">🏠</span>
+                หน้าแรก
+            </div>
+            <div class="nav-item" id="nav-journal" onclick="switchTab('journal')">
                 <span class="icon">✍️</span>
-                <span>บันทึกใจ</span>
+                บันทึกใจ
             </div>
-            <div class="nav-btn" style="opacity: 0.5;">
+            <div class="nav-item" id="nav-chat" onclick="switchTab('chat')">
                 <span class="icon">💬</span>
-                <span>โค้ชปุ้ม</span>
+                คุยกับ AI
             </div>
         </div>
-        <p style="text-align: center; font-size: 0.8rem; color: #ccc; margin-top: 16px;">(ฟีเจอร์อื่นๆ สงวนไว้สำหรับเวอร์ชันเต็ม)</p>
-    </div>
 
+    </div>
 </div>
 
 <script>
-    // State
+    // --- Global State ---
     let state = {
         moodScore: 0,
         moodLabel: '',
         moodEmoji: '',
-        energyScore: 25 // max 50
+        energyScore: 25 
     };
 
-    // Step 1 Logic
+    // --- Step 1 & 2 Logic (Interactive Intro) ---
     function selectMood(cardElement, score, label, emoji) {
-        // Reset all cards
         document.querySelectorAll('.mood-card').forEach(card => card.classList.remove('selected'));
-        // Select current
         cardElement.classList.add('selected');
-        
         state.moodScore = score;
         state.moodLabel = label;
         state.moodEmoji = emoji;
         
-        document.getElementById('btn-next-1').style.display = 'block';
+        // เลื่อนปุ่มไปต่อให้เห็นชัดเจนบนมือถือ
+        const nextBtn = document.getElementById('btn-next-1');
+        nextBtn.style.display = 'block';
+        nextBtn.scrollIntoView({ behavior: 'smooth', block: 'end' });
     }
 
-    // Step 2 Logic
     function updateEnergy() {
         const val = document.getElementById('energy-slider').value;
         state.energyScore = parseInt(val);
-        
-        // Map 0-50 to 0-100% for display
         const percentage = state.energyScore * 2;
         document.getElementById('energy-display').innerText = percentage + '%';
-
-        // Change battery icon based on level
+        
         const batteryIcon = document.getElementById('battery-emoji');
-        if (percentage <= 20) {
-            batteryIcon.innerText = '🪫';
-        } else {
-            batteryIcon.innerText = '🔋';
-        }
+        batteryIcon.innerText = percentage <= 20 ? '🪫' : '🔋';
     }
 
-    // Navigation
     function goStep(step) {
         document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
-        
         if (step === 3) {
             document.getElementById('step-3').classList.add('active');
-            setTimeout(processData, 1500); // Fake AI processing delay
+            setTimeout(processData, 1500); 
         } else {
             document.getElementById(`step-${step}`).classList.add('active');
         }
     }
 
-    // Processing & Dashboard Update
+    // --- Dashboard & Data Processing ---
     function processData() {
-        const totalScore = state.moodScore + state.energyScore; // Max 100
-        
+        // คะแนนเต็ม 100 (Mood max 50 + Energy max 50)
+        const totalScore = state.moodScore + state.energyScore; 
         document.getElementById('final-score').innerText = totalScore;
         document.getElementById('dashboard-mood-title').innerText = `สภาวะใจ: ${state.moodEmoji} ${state.moodLabel}`;
         
         const circle = document.getElementById('final-score-circle');
         const insight = document.getElementById('dashboard-insight');
         const alertZone = document.getElementById('alert-zone');
-
         alertZone.style.display = 'none';
 
-        if (totalScore >= 70) {
+        // ปรับการวิเคราะห์ผลตามคะแนน
+        if (totalScore >= 75) {
             circle.style.background = 'var(--success)';
             insight.innerText = "พลังงานบวกของคุณวันนี้ยอดเยี่ยมมาก! เหมาะแก่การลงมือทำสิ่งใหม่ๆ และส่งต่อรอยยิ้มให้คนรอบข้าง ✨";
-        } else if (totalScore >= 40) {
+        } else if (totalScore >= 45) {
             circle.style.background = 'var(--warning)';
             insight.innerText = "สภาพจิตใจอยู่ในระดับปานกลาง อาจจะมีเหนื่อยบ้าง ลองหาเวลาพักสายตาสัก 10 นาที ดื่มน้ำเย็นๆ แล้วค่อยไปต่อนะ 🌿";
         } else {
             circle.style.background = 'var(--danger)';
             insight.innerText = "ระบบประเมินว่าคุณกำลังแบกรับความกดดันสูง วันนี้อย่าเพิ่งตัดสินใจเรื่องสำคัญ ให้ความสำคัญกับการพักผ่อนและเยียวยาตัวเองก่อนนะ 🤍";
-            alertZone.style.display = 'block'; // Show hotline
+            
+            // โชว์ป้ายเตือนเฉพาะอารมณ์ด้านลบที่คะแนนต่ำจัด
+            if(['เครียดหนัก', 'กังวลใจ', 'โกรธ / หงุดหงิด', 'เศร้า / เหงา'].includes(state.moodLabel)) {
+                alertZone.style.display = 'block';
+            }
         }
 
         document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
-        document.getElementById('dashboard').classList.add('active');
+        document.getElementById('main-app').classList.add('active');
+        
+        // บันทึกการเข้าใช้อัตโนมัติลง Journal
+        saveToLocalStorage("เช็คอินรายวัน", `รู้สึก ${state.moodEmoji} ${state.moodLabel} (พลังงาน ${state.energyScore * 2}%)`);
+        loadJournalHistory();
+    }
+
+    // --- Navigation Logic ---
+    function switchTab(tabName) {
+        document.querySelectorAll('.view-section').forEach(v => {
+            v.classList.remove('active');
+            v.style.display = 'none'; 
+        });
+        document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+
+        const targetView = document.getElementById(`view-${tabName}`);
+        targetView.classList.add('active');
+        
+        if(tabName === 'chat') {
+            targetView.style.display = 'flex';
+            setTimeout(() => scrollChatToBottom(), 100);
+        } else {
+            targetView.style.display = 'block';
+        }
+
+        document.getElementById(`nav-${tabName}`).classList.add('active');
+    }
+
+    // --- Journal Logic ---
+    function saveJournal() {
+        const input = document.getElementById('journal-input').value.trim();
+        if(!input) return;
+        saveToLocalStorage("บันทึกส่วนตัว", input);
+        document.getElementById('journal-input').value = '';
+        
+        // แจ้งเตือนเมื่อบันทึกสำเร็จ
+        const btn = document.querySelector('#view-journal .btn-primary');
+        const originalText = btn.innerText;
+        btn.innerText = "✔️ บันทึกเรียบร้อย";
+        btn.style.background = "var(--success)";
+        setTimeout(() => {
+            btn.innerText = originalText;
+            btn.style.background = "var(--primary)";
+        }, 2000);
+
+        loadJournalHistory();
+    }
+
+    function saveToLocalStorage(type, text) {
+        let history = JSON.parse(localStorage.getItem('pinkjai_v2_history')) || [];
+        const date = new Date();
+        const timeString = `${date.getHours().toString().padStart(2, '0')}:${date.getMinutes().toString().padStart(2, '0')}`;
+        const dateString = `${date.getDate()}/${date.getMonth()+1}`;
+        
+        history.unshift({ type, text, time: `${dateString} ${timeString}` });
+        if(history.length > 20) history.pop(); 
+        localStorage.setItem('pinkjai_v2_history', JSON.stringify(history));
+    }
+
+    function loadJournalHistory() {
+        const container = document.getElementById('journal-history');
+        const history = JSON.parse(localStorage.getItem('pinkjai_v2_history')) || [];
+        
+        if(history.length === 0) {
+            container.innerHTML = '<p style="color:var(--text-muted); font-size:0.9rem; text-align:center; padding: 20px 0;">ยังไม่มีบันทึก เริ่มต้นเขียนครั้งแรกได้เลย!</p>';
+            return;
+        }
+
+        container.innerHTML = history.map(item => `
+            <div class="log-item">
+                <div class="log-header">
+                    <span style="font-weight:bold; color:var(--primary);">${item.type}</span>
+                    <span>${item.time}</span>
+                </div>
+                <div style="font-size:0.95rem; line-height: 1.5; color: var(--text-dark);">${item.text}</div>
+            </div>
+        `).join('');
+    }
+
+    // --- Chat Logic ---
+    function sendChat() {
+        const input = document.getElementById('chat-input');
+        const text = input.value.trim();
+        if(!text) return;
+
+        appendChat(text, 'user');
+        input.value = '';
+
+        setTimeout(() => {
+            let aiResponse = "รับทราบครับ... การได้ระบายออกมาถือเป็นการเริ่มต้นที่ดีนะ คุณเก่งมากแล้วที่จัดการกับความรู้สึกตัวเองในวันนี้";
+             if(text.includes("เครียด") || text.includes("เหนื่อย") || text.includes("ท้อ") || text.includes("ไม่ไหว")) {
+                aiResponse = "เข้าใจเลยครับว่ามันหนักหนา ลองสูดหายใจลึกๆ ดูนะ วันนี้ไม่ต้องฝืนทำอะไรที่เกินตัว พักผ่อนให้เต็มที่ครับ";
+            } else if(text.includes("ดี") || text.includes("โอเค") || text.includes("สุข") || text.includes("เยี่ยม")) {
+                aiResponse = "ดีใจที่ได้ยินแบบนั้นครับ! เก็บความรู้สึกดีๆ นี้ไว้เป็นพลังงานบวกสำหรับวันพรุ่งนี้นะครับ";
+            } else if(text.includes("โกรธ") || text.includes("หงุดหงิด")) {
+                aiResponse = "ตอนที่โกรธ ร่างกายเราจะสูบฉีดเลือดเร็วมาก ลองดื่มน้ำเย็นๆ สักแก้ว แล้วทิ้งระยะห่างจากสิ่งที่ทำให้โกรธสัก 10 นาทีดีไหมครับ?";
+            }
+            
+            appendChat(aiResponse, 'bot');
+        }, 1200);
+    }
+
+    function appendChat(text, sender) {
+        const box = document.getElementById('chat-box');
+        const bubble = document.createElement('div');
+        bubble.className = `chat-bubble ${sender}`;
+        bubble.innerText = text;
+        
+        bubble.style.opacity = 0;
+        bubble.style.transform = "translateY(10px)";
+        bubble.style.transition = "all 0.3s ease";
+        
+        box.appendChild(bubble);
+        
+        setTimeout(() => {
+            bubble.style.opacity = 1;
+            bubble.style.transform = "translateY(0)";
+            scrollChatToBottom();
+        }, 50);
+    }
+
+    function scrollChatToBottom() {
+        const viewChat = document.getElementById('view-chat');
+        viewChat.scrollTop = viewChat.scrollHeight;
     }
 </script>
 
 </body>
-  </html>
-              
+</html>
