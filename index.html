@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Pak Pink Jai 🌿 - Full Version</title>
+    <title>Pak Pink Jai 🌿 - V3 Conceptual Complete</title>
     <style>
         :root {
             --bg-color: #f4f7f6;
@@ -29,15 +29,18 @@
             overflow-x: hidden;
             box-shadow: 0 0 20px rgba(0,0,0,0.05);
             min-height: 100vh;
+            display: flex;
+            flex-direction: column;
         }
 
-        .screen { display: none; flex-direction: column; height: 100vh; padding: 32px 24px; text-align: center; justify-content: center; animation: fadeIn 0.4s ease; }
+        .screen { display: none; flex-direction: column; height: 100vh; padding: 32px 24px; text-align: center; justify-content: center; animation: fadeIn 0.4s ease; overflow-y: auto; }
         .screen.active { display: flex; }
 
         @keyframes fadeIn { from { opacity: 0; transform: translateY(15px); } to { opacity: 1; transform: translateY(0); } }
 
-        /* Typography & UI */
+        /* Typography & Components */
         h1 { font-size: 1.6rem; margin-bottom: 8px; color: var(--text-dark); }
+        .concept-badge { display: inline-block; background: #e2ede6; color: var(--primary); font-size: 0.75rem; font-weight: bold; padding: 4px 10px; border-radius: 10px; margin-bottom: 12px; text-transform: uppercase; letter-spacing: 1px; }
         p.subtitle { color: var(--text-muted); font-size: 0.95rem; margin-bottom: 24px; }
         
         .btn-next, .btn-primary {
@@ -47,213 +50,289 @@
         .btn-next:disabled { background: #ccc; cursor: not-allowed; }
         .btn-next:active, .btn-primary:active { transform: scale(0.98); }
 
-        /* Step 1: Mood Grid (Updated for 8 Items) */
-        .mood-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px; margin-bottom: 16px;}
+        /* Concept Layout: Mood Grid */
+        .mood-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px; margin-bottom: 16px; width: 100%; }
         .mood-card {
             background: var(--card-bg); border: 2px solid transparent; border-radius: 16px; padding: 20px 12px; cursor: pointer; transition: 0.2s; display: flex; flex-direction: column; align-items: center; justify-content: center;
         }
         .mood-card .emoji { font-size: 2.5rem; margin-bottom: 8px; display: block; }
         .mood-card .label { font-weight: bold; font-size: 0.95rem; }
-        .mood-card.selected { border-color: var(--primary); background: var(--primary-light); transform: scale(1.05); }
+        .mood-card.selected { border-color: var(--primary); background: var(--primary-light); transform: scale(1.03); }
 
-        /* Step 2: Energy Slider */
-        .battery-icon { font-size: 5rem; margin-bottom: 24px; transition: 0.3s; }
-        .energy-val { font-size: 3rem; font-weight: bold; color: var(--primary); margin-bottom: 24px; }
+        /* Step 2: Energy Slider (+ - Logic) */
+        .battery-icon { font-size: 5rem; margin-bottom: 16px; transition: 0.3s; }
+        .energy-val { font-size: 3rem; font-weight: bold; color: var(--primary); margin-bottom: 16px; }
         input[type=range] { -webkit-appearance: none; width: 100%; margin: 20px 0; background: transparent; }
         input[type=range]::-webkit-slider-runnable-track { width: 100%; height: 12px; cursor: pointer; background: #ddd; border-radius: 10px; }
         input[type=range]::-webkit-slider-thumb { height: 32px; width: 32px; border-radius: 50%; background: var(--primary); cursor: pointer; -webkit-appearance: none; margin-top: -10px; box-shadow: 0 4px 10px rgba(0,0,0,0.2); }
 
-        /* Step 3: Processing */
+        /* Step 3: Sudden Alert Check (Sud Logic) */
+        .sud-options { display: flex; flex-direction: column; gap: 12px; width: 100%; margin-top: 20px; }
+        .sud-btn { background: var(--card-bg); border: 2px solid transparent; border-radius: 16px; padding: 20px; text-align: left; cursor: pointer; transition: 0.2s; display: flex; align-items: center; gap: 16px; }
+        .sud-btn .icon { font-size: 2rem; }
+        .sud-btn h4 { font-size: 1rem; margin-bottom: 2px; }
+        .sud-btn p { font-size: 0.85rem; color: var(--text-muted); }
+        .sud-btn.selected { border-color: var(--danger); background: #fff5f2; }
+
+        /* Step 4: Loading (Analytic Logic) */
         .loader { width: 60px; height: 60px; border: 6px solid var(--primary-light); border-top: 6px solid var(--primary); border-radius: 50%; animation: spin 1s linear infinite; margin: 0 auto 24px; }
         @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
 
         /* Main App Area */
-        #main-app { display: none; padding-bottom: 80px; flex-direction: column; height: 100vh; }
-        #main-app.active { display: flex; animation: fadeIn 0.5s ease; }
-        .app-header { padding: 24px 24px 16px; background: var(--bg-color); position: sticky; top: 0; z-index: 10; border-bottom: 1px solid rgba(0,0,0,0.02); }
-        .view-section { display: none; flex: 1; overflow-y: auto; padding: 0 24px 24px; }
-        .view-section.active { display: block; animation: fadeIn 0.3s ease; }
+        #main-app { display: none; padding-bottom: 90px; flex-direction: column; flex: 1; height: 100vh; }
+        #main-app.active { display: flex; }
+        .app-header { padding: 20px 24px; background: var(--bg-color); position: sticky; top: 0; z-index: 10; border-bottom: 1px solid rgba(0,0,0,0.02); }
+        .view-section { display: none; flex: 1; overflow-y: auto; padding: 0 24px 20px; }
+        .view-section.active { display: block; }
 
-        /* Dashboard Cards */
-        .score-card { background: var(--card-bg); border-radius: var(--radius); padding: 32px 24px; text-align: center; margin-top: 16px; margin-bottom: 16px; box-shadow: 0 10px 30px rgba(0,0,0,0.03); }
-        .score-circle { width: 120px; height: 120px; border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto 16px; font-size: 3rem; font-weight: bold; color: white; }
-        .insight-text { font-size: 0.95rem; color: var(--text-dark); margin-top: 16px; line-height: 1.6; }
-        .alert-box { background: #fff0f0; border-left: 4px solid var(--danger); padding: 16px; margin-bottom: 16px; border-radius: 12px; text-align: left; display: none; }
-        .hotline-btn { display: inline-block; background: var(--danger); color: white; padding: 8px 16px; border-radius: 8px; text-decoration: none; font-weight: bold; margin-top: 8px; font-size: 0.9rem; }
+        /* Measure & Action Elements on Dashboard */
+        .score-card { background: var(--card-bg); border-radius: var(--radius); padding: 28px 20px; text-align: center; margin-top: 8px; margin-bottom: 16px; box-shadow: 0 10px 30px rgba(0,0,0,0.02); }
+        .score-circle { width: 110px; height: 110px; border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto 16px; font-size: 2.8rem; font-weight: bold; color: white; }
+        .insight-text { font-size: 0.95rem; color: var(--text-dark); margin-top: 12px; line-height: 1.5; text-align: left; background: #fafafa; padding: 12px; border-radius: 12px; }
+        .alert-box { background: #fff0f0; border-left: 4px solid var(--danger); padding: 16px; margin-bottom: 16px; border-radius: 12px; text-align: left; display: none; animation: fadeIn 0.3s ease; }
+        .hotline-btn { display: inline-block; background: var(--danger); color: white; padding: 10px 16px; border-radius: 8px; text-decoration: none; font-weight: bold; margin-top: 8px; font-size: 0.9rem; }
 
-        /* Journal UI */
-        .input-box { width: 100%; padding: 16px; border: 2px solid transparent; border-radius: 16px; background: var(--card-bg); font-size: 1rem; margin-bottom: 16px; resize: none; outline: none; transition: 0.3s; margin-top: 16px; }
-        .input-box:focus { border-color: var(--primary); background: #fff; }
-        .log-item { background: var(--card-bg); padding: 16px; border-radius: 16px; margin-bottom: 12px; text-align: left; box-shadow: 0 4px 10px rgba(0,0,0,0.02); }
-        .log-header { display: flex; justify-content: space-between; margin-bottom: 8px; font-size: 0.85rem; color: var(--text-muted); }
+        /* Horoscope View UI */
+        .horo-card { background: linear-gradient(135deg, #fbf7f3 0%, #f5e6dc 100%); border-radius: var(--radius); padding: 24px; margin-top: 12px; text-align: center; box-shadow: 0 4px 15px rgba(224,122,95,0.05); }
+        .horo-lucky-box { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-top: 16px; }
+        .lucky-item { background: rgba(255,255,255,0.7); padding: 12px; border-radius: 12px; font-size: 0.9rem; }
 
-        /* Chat UI */
-        .chat-container { display: flex; flex-direction: column; gap: 12px; margin-bottom: 16px; margin-top: 16px;}
-        .chat-bubble { max-width: 85%; padding: 14px 18px; border-radius: 20px; font-size: 0.95rem; text-align: left; line-height: 1.5; }
-        .chat-bubble.bot { background: #e0e7e3; align-self: flex-start; border-bottom-left-radius: 4px; color: var(--text-dark); }
+        /* Chat View UI */
+        .chat-container { display: flex; flex-direction: column; gap: 12px; margin-top: 12px; }
+        .chat-bubble { max-width: 85%; padding: 12px 16px; border-radius: 20px; font-size: 0.95rem; text-align: left; line-height: 1.4; }
+        .chat-bubble.bot { background: #e4ebe7; align-self: flex-start; border-bottom-left-radius: 4px; color: var(--text-dark); }
         .chat-bubble.user { background: var(--primary); color: white; align-self: flex-end; border-bottom-right-radius: 4px; }
-        .chat-input-area { display: flex; gap: 8px; position: sticky; bottom: 0; background: var(--bg-color); padding-top: 8px; }
-        .chat-input { flex: 1; padding: 14px 20px; border-radius: 24px; border: none; background: var(--card-bg); outline: none; box-shadow: 0 4px 10px rgba(0,0,0,0.02); font-size: 1rem; }
-        .send-btn { background: var(--primary); color: white; border: none; width: 48px; height: 48px; border-radius: 50%; cursor: pointer; font-size: 1.2rem; display: flex; align-items: center; justify-content: center; }
+        .chat-input-area { display: flex; gap: 8px; position: sticky; bottom: 0; background: var(--bg-color); padding-top: 12px; padding-bottom: 4px; }
+        .chat-input { flex: 1; padding: 14px 20px; border-radius: 24px; border: none; background: var(--card-bg); outline: none; box-shadow: 0 4px 10px rgba(0,0,0,0.02); font-size: 0.95rem; }
+        .send-btn { background: var(--primary); color: white; border: none; width: 46px; height: 46px; border-radius: 50%; cursor: pointer; font-size: 1.1rem; display: flex; align-items: center; justify-content: center; }
 
-        /* Bottom Nav */
-        .bottom-nav { position: fixed; bottom: 0; left: 50%; transform: translateX(-50%); width: 100%; max-width: 480px; background: var(--card-bg); display: flex; justify-content: space-around; padding: 12px 0 20px; border-top-left-radius: 24px; border-top-right-radius: 24px; box-shadow: 0 -4px 20px rgba(0,0,0,0.04); z-index: 100; }
-        .nav-item { text-align: center; color: var(--text-muted); cursor: pointer; font-size: 0.75rem; font-weight: bold; flex: 1; transition: 0.2s; }
+        /* More Data (Journal) & Measure (History) UI */
+        .input-box { width: 100%; padding: 16px; border: 2px solid transparent; border-radius: 16px; background: var(--card-bg); font-size: 0.95rem; margin-top: 12px; margin-bottom: 12px; resize: none; outline: none; transition: 0.3s; }
+        .input-box:focus { border-color: var(--primary); background: #fff; }
+        .log-item { background: var(--card-bg); padding: 14px; border-radius: 16px; margin-bottom: 10px; text-align: left; box-shadow: 0 4px 10px rgba(0,0,0,0.01); }
+        .log-header { display: flex; justify-content: space-between; margin-bottom: 6px; font-size: 0.8rem; color: var(--text-muted); }
+
+        /* Bottom Nav Bar */
+        .bottom-nav { position: fixed; bottom: 0; left: 50%; transform: translateX(-50%); width: 100%; max-width: 480px; background: var(--card-bg); display: flex; justify-content: space-around; padding: 10px 0 16px; border-top-left-radius: 20px; border-top-right-radius: 20px; box-shadow: 0 -4px 20px rgba(0,0,0,0.03); z-index: 100; }
+        .nav-item { text-align: center; color: var(--text-muted); cursor: pointer; font-size: 0.75rem; font-weight: bold; flex: 1; transition: 0.15s; }
         .nav-item.active { color: var(--primary); }
-        .nav-item .icon { font-size: 1.5rem; display: block; margin-bottom: 4px; }
+        .nav-item .icon { font-size: 1.4rem; display: block; margin-bottom: 2px; }
     </style>
 </head>
 <body>
 
 <div id="app-container">
 
-    <!-- Step 1: Mood -->
-    <div id="step-1" class="screen active" style="justify-content: flex-start; overflow-y: auto; padding-top: 40px;">
-        <h1>รู้สึกอย่างไรบ้าง?</h1>
-        <p class="subtitle">เลือกสภาวะใจที่ตรงกับคุณที่สุดในตอนนี้</p>
+    <!-- STEP 1: Check in / Normal (Mood Selector) -->
+    <div id="step-1" class="screen active">
+        <span class="concept-badge">Check In / Normal</span>
+        <h1>วันนี้รู้สึกอย่างไรบ้าง?</h1>
+        <p class="subtitle">เลือกสภาวะอารมณ์ในปัจจุบันของคุณ</p>
         
-        <!-- Expanded to 8 Moods -->
         <div class="mood-grid">
-            <div class="mood-card" onclick="selectMood(this, 5, 'เครียด', '😫')">
+            <div class="mood-card" onclick="selectMood(this, 5, 'เครียดหนัก', '😫')">
                 <span class="emoji">😫</span>
                 <span class="label">เครียดหนัก</span>
             </div>
-            <div class="mood-card" onclick="selectMood(this, 10, 'กังวล', '😰')">
+            <div class="mood-card" onclick="selectMood(this, 12, 'กังวลใจ', '😰')">
                 <span class="emoji">😰</span>
                 <span class="label">กังวลใจ</span>
             </div>
-            <div class="mood-card" onclick="selectMood(this, 10, 'โกรธ', '😠')">
+            <div class="mood-card" onclick="selectMood(this, 10, 'หงุดหงิด', '😠')">
                 <span class="emoji">😠</span>
-                <span class="label">โกรธ / หงุดหงิด</span>
+                <span class="label">หงุดหงิด</span>
             </div>
-            <div class="mood-card" onclick="selectMood(this, 20, 'เศร้า', '😔')">
+            <div class="mood-card" onclick="selectMood(this, 18, 'เศร้าซึม', '😔')">
                 <span class="emoji">😔</span>
-                <span class="label">เศร้า / เหงา</span>
+                <span class="label">เศร้าซึม</span>
             </div>
             <div class="mood-card" onclick="selectMood(this, 20, 'หมดไฟ', '😮‍💨')">
                 <span class="emoji">😮‍💨</span>
-                <span class="label">เหนื่อยล้า</span>
+                <span class="label">หมดไฟ</span>
             </div>
-            <div class="mood-card" onclick="selectMood(this, 35, 'ปกติ', '😐')">
+            <div class="mood-card" onclick="selectMood(this, 35, 'เฉยๆ', '😐')">
                 <span class="emoji">😐</span>
-                <span class="label">เฉยๆ / ว่างเปล่า</span>
+                <span class="label">เฉยๆ / ปกติ</span>
             </div>
-            <div class="mood-card" onclick="selectMood(this, 45, 'โอเค', '😌')">
+            <div class="mood-card" onclick="selectMood(this, 45, 'สงบใจ', '😌')">
                 <span class="emoji">😌</span>
-                <span class="label">โอเค / สงบ</span>
+                <span class="label">สงบ / โอเค</span>
             </div>
-            <div class="mood-card" onclick="selectMood(this, 50, 'สดใส', '✨')">
+            <div class="mood-card" onclick="selectMood(this, 50, 'สดใสดี', '✨')">
                 <span class="emoji">✨</span>
-                <span class="label">สดใส / ดีใจ</span>
+                <span class="label">สดใส / มีสุข</span>
             </div>
         </div>
         
-        <button id="btn-next-1" class="btn-next" style="display: none; margin-top: 16px; margin-bottom: 24px;" onclick="goStep(2)">ไปต่อ ➔</button>
+        <button id="btn-next-1" class="btn-next" style="display: none;" onclick="goStep(2)">ไปต่อ (+ -) ➔</button>
     </div>
 
-    <!-- Step 2: Energy -->
+    <!-- STEP 2: + - (Energy Score Matrix) -->
     <div id="step-2" class="screen">
-        <h1>พลังงานชีวิตเหลือแค่ไหน?</h1>
-        <p class="subtitle">เลื่อนแถบเพื่อบอกแบตเตอรี่ของคุณ</p>
+        <span class="concept-badge">+ - Matrix</span>
+        <h1>ระดับพลังงานบวก/ลบ?</h1>
+        <p class="subtitle">เลื่อนระบุปริมาณแบตเตอรี่ในตัวคุณ</p>
         
         <div id="battery-emoji" class="battery-icon">🔋</div>
         <div id="energy-display" class="energy-val">50%</div>
         
         <input type="range" id="energy-slider" min="0" max="50" value="25" oninput="updateEnergy()">
         
-        <div style="display: flex; justify-content: space-between; color: var(--text-muted); font-size: 0.9rem; margin-bottom: 40px;">
-            <span>หมดเกลี้ยง</span>
-            <span>เต็มเปี่ยม</span>
+        <div style="display: flex; justify-content: space-between; color: var(--text-muted); font-size: 0.85rem; margin-bottom: 40px; width:100%;">
+            <span>พลังงานด้านลบ (-)</span>
+            <span>พลังงานด้านบวก (+)</span>
         </div>
 
-        <button class="btn-next" onclick="goStep(3)">ประมวลผล ➔</button>
+        <button class="btn-next" onclick="goStep(3)">ไปต่อ (Sud Check) ➔</button>
     </div>
 
-    <!-- Step 3: Processing -->
+    <!-- STEP 3: Sud (Sudden Emergency Check) -->
     <div id="step-3" class="screen">
-        <div class="loader"></div>
-        <h2 style="color: var(--primary);">กำลังวิเคราะห์...</h2>
-        <p class="subtitle" style="margin-top: 8px;">ประมวลผลสภาวะใจของคุณ</p>
+        <span class="concept-badge">Sud Check</span>
+        <h1>ระดับสภาวะเฉียบพลัน?</h1>
+        <p class="subtitle">ตอนนี้คุณมีสภาวะอารมณ์รุนแรงเฉียบพลันหรือไม่</p>
+        
+        <div class="sud-options">
+            <div class="sud-btn" onclick="selectSud(this, true)">
+                <span class="icon">🚨</span>
+                <div>
+                    <h4>ใช่ มีอาการรุนแรง</h4>
+                    <p>เครียด/ดิ่ง/โกรธจัด แบบทันทีทันใด</p>
+                </div>
+            </div>
+            <div class="sud-btn selected" onclick="selectSud(this, false)">
+                <span class="icon">🍃</span>
+                <div>
+                    <h4>ไม่ใช่ สภาวะปกติ</h4>
+                    <p>อารมณ์คงที่ ค่อยเป็นค่อยไป</p>
+                </div>
+            </div>
+        </div>
+
+        <button class="btn-next" onclick="goStep(4)">เริ่มประมวลผล (Analytic) ➔</button>
     </div>
 
-    <!-- Main Application Area -->
+    <!-- STEP 4: Analytic (Processing Engine) -->
+    <div id="step-4" class="screen">
+        <div class="loader"></div>
+        <span class="concept-badge" style="background:#ebf2ee;">Analytic Engine</span>
+        <h2 style="color: var(--primary);">ระบบกำลังวิเคราะห์ข้อมูล...</h2>
+        <p class="subtitle" style="margin-top: 8px;">มูดเช็คเกอร์กำลังคำนวณผลและจัดเตรียมคำแนะนำ</p>
+    </div>
+
+    <!-- MAIN APP FLOW -->
     <div id="main-app">
         
-        <!-- Header -->
         <div class="app-header">
-            <h2 style="display: flex; align-items: center; gap: 8px; font-size: 1.4rem;">
-                🌿 พักพิงใจ 
-                <span style="font-size:0.85rem; color:var(--text-muted); font-weight:normal; margin-left:auto; cursor:pointer; background: #f0f0f0; padding: 6px 12px; border-radius: 12px;" onclick="location.reload()">🔄 เริ่มใหม่</span>
+            <h2 style="display: flex; align-items: center; gap: 6px; font-size: 1.3rem;">
+                🌿 พักพิงใจ <span style="font-size:0.75rem; color:var(--text-muted); font-weight:normal;">(Offline Mode)</span>
+                <span style="font-size:0.8rem; color:var(--text-muted); font-weight:normal; margin-left:auto; cursor:pointer; background: #eef2f0; padding: 4px 10px; border-radius: 8px;" onclick="location.reload()">🔄 ประเมินใหม่</span>
             </h2>
         </div>
 
-        <!-- View 1: Dashboard -->
+        <!-- VIEW 1: Dashboard (Measure & Action & Analytic Result) -->
         <div id="view-dashboard" class="view-section active">
             <div class="score-card">
+                <span class="concept-badge" style="background:#f4f4f4; color:#666;">Measure Score</span>
                 <div id="final-score-circle" class="score-circle" style="background: var(--success);">
                     <span id="final-score">0</span>
                 </div>
                 <h2 id="dashboard-mood-title">สภาวะใจ: โอเค</h2>
-                <p id="dashboard-insight" class="insight-text">กำลังโหลดข้อมูล...</p>
+                <div class="insight-text">
+                    <strong>💡 AI Analytic:</strong> 
+                    <span id="dashboard-insight">กำลังโหลดผลวิเคราะห์วิถีชีวิต...</span>
+                </div>
             </div>
 
+            <!-- Action Intervention Box (Sudden Triggered) -->
             <div id="alert-zone" class="alert-box">
-                <h4 style="color: var(--danger); margin-bottom: 4px;">⚠️ ตรวจพบสภาวะตึงเครียด</h4>
-                <p style="font-size: 0.9rem; margin-bottom: 8px;">ถ้าไม่ไหวมีคนพร้อมรับฟังเสมอนะ ปลอดภัยไว้ก่อน</p>
+                <span class="concept-badge" style="background:var(--danger); color:white;">Action Intervention</span>
+                <h4 style="color: var(--danger); margin-bottom: 4px; font-weight:700;">🚨 ตรวจพบสภาวะดิ่งรุนแรง (Sud)</h4>
+                <p style="font-size: 0.85rem; margin-bottom: 8px; line-height:1.4;">ระบบแนะนำให้หยุดคิดและชะลอการตัดสินใจสำคัญในตอนนี้ หากไม่สบายใจอย่างมาก มีเจ้าหน้าที่สายด่วนพร้อมรับฟังคุณฟรีตลอด 24 ชั่วโมง</p>
                 <a href="tel:1323" class="hotline-btn">📞 โทร 1323 (สายด่วนสุขภาพจิต)</a>
             </div>
             
-            <h3 style="margin: 24px 0 12px; font-size:1.1rem; color: var(--text-dark);">ทางลัดด่วน</h3>
-            <div class="mood-grid" style="gap:12px; grid-template-columns: 1fr 1fr;">
-                <div class="mood-card" style="padding:16px; text-align:center; border-radius:16px; background: #f9f9f9;" onclick="switchTab('journal')">
-                    <span class="emoji" style="font-size:2rem; margin-bottom:8px;">✍️</span>
-                    <span style="font-weight:bold; font-size:0.95rem;">ระบายความรู้สึก</span>
+            <div class="mood-grid" style="grid-template-columns: 1fr 1fr; gap:10px; margin-top:8px;">
+                <div class="mood-card" style="padding:14px; text-align:center; border-radius:12px; background: var(--primary-light);" onclick="switchTab('horoscope')">
+                    <span style="font-size:1.5rem; margin-bottom:4px;">🔮</span>
+                    <span style="font-weight:bold; font-size:0.85rem; color:var(--primary);">Horoscope บำบัด</span>
                 </div>
-                <div class="mood-card" style="padding:16px; text-align:center; border-radius:16px; background: #f9f9f9;" onclick="switchTab('chat')">
-                    <span class="emoji" style="font-size:2rem; margin-bottom:8px;">💬</span>
-                    <span style="font-weight:bold; font-size:0.95rem;">คุยกับ AI</span>
+                <div class="mood-card" style="padding:14px; text-align:center; border-radius:12px; background: var(--primary-light);" onclick="switchTab('journal')">
+                    <span style="font-size:1.5rem; margin-bottom:4px;">✍️</span>
+                    <span style="font-weight:bold; font-size:0.85rem; color:var(--primary);">เพิ่มข้อมูล (More Data)</span>
                 </div>
             </div>
         </div>
 
-        <!-- View 2: Journal -->
-        <div id="view-journal" class="view-section">
-            <h2 style="margin-top: 16px;">บันทึกใจ</h2>
-            <p style="font-size: 0.9rem; color: var(--text-muted);">เขียนระบายสิ่งที่มีอยู่ในใจ พื้นที่นี้ปลอดภัย</p>
-            <textarea id="journal-input" class="input-box" rows="5" placeholder="วันนี้เจอเรื่องอะไรมาบ้าง พิมพ์บอกได้เลยนะ..."></textarea>
-            <button class="btn-primary" onclick="saveJournal()">บันทึกความรู้สึก</button>
-
-            <h3 style="margin: 32px 0 16px; font-size:1.1rem; border-top: 1px solid #eee; padding-top: 24px;">บันทึกย้อนหลัง</h3>
-            <div id="journal-history">
-                <!-- Data will load here -->
+        <!-- VIEW 2: Horoscope (Horoscope Concept) -->
+        <div id="view-horoscope" class="view-section">
+            <span class="concept-badge">Horoscope ฮีลใจ</span>
+            <h2>สีมงคลและคำทำนายตามอารมณ์</h2>
+            <p class="subtitle" style="margin-bottom:16px;">บำบัดจิตใจด้วยวิถีสายมูเชิงบวก</p>
+            
+            <div class="horo-card">
+                <span style="font-size: 3rem; display:block; margin-bottom:8px;">🃏</span>
+                <h3 style="color:#8a624a; font-weight:700; margin-bottom:6px;" id="horo-title">คำแนะนำไพ่ประจำสภาวะใจ</h3>
+                <p id="horo-desc" style="font-size:0.9rem; line-height:1.5; color:#5c473c;">ไพ่กำลังเปิดรับพลังงานเพื่อทำนายผลลัพธ์ของคุณ...</p>
+                
+                <div class="horo-lucky-box">
+                    <div class="lucky-item">
+                        <strong>🎨 สีมงคลเสริมใจ:</strong>
+                        <div id="lucky-color" style="font-weight:bold; margin-top:4px; color:var(--primary);">สีเขียวพาสเทล</div>
+                    </div>
+                    <div class="lucky-item">
+                        <strong>🌱 กิจกรรมเสริมเฮง:</strong>
+                        <div id="lucky-act" style="font-weight:bold; margin-top:4px; color:var(--primary);">เดินเล่นในสวน</div>
+                    </div>
+                </div>
             </div>
         </div>
 
-        <!-- View 3: AI Chat -->
+        <!-- VIEW 3: AI Chat bot (AI chat bot Concept) -->
         <div id="view-chat" class="view-section" style="display: flex; flex-direction: column;">
+            <span class="concept-badge" style="align-self: flex-start;">AI Chat Bot</span>
             <div class="chat-container" id="chat-box" style="flex:1;">
-                <div class="chat-bubble bot">สวัสดี ฉันคือ AI ของ Pak Pink Jai วันนี้มีเรื่องอะไรไม่สบายใจ หรืออยากเล่าให้ฟังไหม? พื้นที่นี้เป็นส่วนตัว 100% นะ</div>
+                <div class="chat-bubble bot">สวัสดีครับ ผมคือระบบ AI คอยดูแลใจ วันนี้คุณมีเรื่องกังวลใจหรืออยากพูดคุยปรึกษาส่วนไหน ระบายให้ผมฟังได้เลยนะครับ 💚</div>
             </div>
             
             <div class="chat-input-area">
-                <input type="text" id="chat-input" class="chat-input" placeholder="พิมพ์ข้อความ..." onkeypress="if(event.key === 'Enter') sendChat()">
+                <input type="text" id="chat-input" class="chat-input" placeholder="คุยกับ AI ตรงนี้..." onkeypress="if(event.key === 'Enter') sendChat()">
                 <button class="send-btn" onclick="sendChat()">➔</button>
             </div>
         </div>
 
-        <!-- Bottom Navigation -->
+        <!-- VIEW 4: More Data / Measure (Journal Entry & Historical Logs) -->
+        <div id="view-journal" class="view-section">
+            <span class="concept-badge">More Data Log</span>
+            <h2>พิมพ์บันทึก/ระบายเพิ่มเติม</h2>
+            <p class="subtitle" style="margin-bottom:8px;">ยิ่งป้อนข้อมูลเยอะ AI ยิ่งวิเคราะห์ได้ละเอียดขึ้น</p>
+            
+            <textarea id="journal-input" class="input-box" rows="4" placeholder="พิมพ์เขียนความรู้สึกที่มีตอนนี้ลงไปลึกๆ ได้เลย..."></textarea>
+            <button class="btn-primary" onclick="saveJournal()">บันทึกลงฐานข้อมูลเครื่อง</button>
+
+            <h3 style="margin: 28px 0 12px; font-size:1.05rem; border-top: 1px solid #e2e2e2; padding-top: 20px; color: var(--text-dark);">📊 ประวัติการประเมิน (Measure)</h3>
+            <div id="journal-history">
+                <!-- Loaded items -->
+            </div>
+        </div>
+
+        <!-- Concept Navigation Bar -->
         <div class="bottom-nav">
             <div class="nav-item active" id="nav-dashboard" onclick="switchTab('dashboard')">
                 <span class="icon">🏠</span>
                 หน้าแรก
             </div>
-            <div class="nav-item" id="nav-journal" onclick="switchTab('journal')">
-                <span class="icon">✍️</span>
-                บันทึกใจ
+            <div class="nav-item" id="nav-horoscope" onclick="switchTab('horoscope')">
+                <span class="icon">🔮</span>
+                สายมู
             </div>
             <div class="nav-item" id="nav-chat" onclick="switchTab('chat')">
                 <span class="icon">💬</span>
-                คุยกับ AI
+                AI บอท
+            </div>
+            <div class="nav-item" id="nav-journal" onclick="switchTab('journal')">
+                <span class="icon">📊</span>
+                ประวัติใจ
             </div>
         </div>
 
@@ -261,202 +340,204 @@
 </div>
 
 <script>
-    // --- Global State ---
-    let state = {
+    // --- Application Architecture State ---
+    let appState = {
         moodScore: 0,
         moodLabel: '',
         moodEmoji: '',
-        energyScore: 25 
+        energyScore: 25, 
+        isSudden: false,
+        calculatedScore: 0
     };
 
-    // --- Step 1 & 2 Logic (Interactive Intro) ---
+    // --- Step 1: Check in Logic ---
     function selectMood(cardElement, score, label, emoji) {
         document.querySelectorAll('.mood-card').forEach(card => card.classList.remove('selected'));
         cardElement.classList.add('selected');
-        state.moodScore = score;
-        state.moodLabel = label;
-        state.moodEmoji = emoji;
-        
-        // เลื่อนปุ่มไปต่อให้เห็นชัดเจนบนมือถือ
-        const nextBtn = document.getElementById('btn-next-1');
-        nextBtn.style.display = 'block';
-        nextBtn.scrollIntoView({ behavior: 'smooth', block: 'end' });
+        appState.moodScore = score;
+        appState.moodLabel = label;
+        appState.moodEmoji = emoji;
+        document.getElementById('btn-next-1').style.display = 'block';
     }
 
+    // --- Step 2: + - Energy Logic ---
     function updateEnergy() {
         const val = document.getElementById('energy-slider').value;
-        state.energyScore = parseInt(val);
-        const percentage = state.energyScore * 2;
+        appState.energyScore = parseInt(val);
+        const percentage = appState.energyScore * 2;
         document.getElementById('energy-display').innerText = percentage + '%';
         
         const batteryIcon = document.getElementById('battery-emoji');
         batteryIcon.innerText = percentage <= 20 ? '🪫' : '🔋';
     }
 
+    // --- Step 3: Sud Check Logic ---
+    function selectSud(btnElement, status) {
+        document.querySelectorAll('.sud-btn').forEach(btn => btn.classList.remove('selected'));
+        btnElement.classList.add('selected');
+        appState.isSudden = status;
+    }
+
+    // --- Navigation Flow ---
     function goStep(step) {
         document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
-        if (step === 3) {
-            document.getElementById('step-3').classList.add('active');
-            setTimeout(processData, 1500); 
+        if (step === 4) {
+            document.getElementById('step-4').classList.add('active');
+            setTimeout(processAnalyticEngine, 1500); // Simulated Analytic engine processing
         } else {
             document.getElementById(`step-${step}`).classList.add('active');
         }
     }
 
-    // --- Dashboard & Data Processing ---
-    function processData() {
-        // คะแนนเต็ม 100 (Mood max 50 + Energy max 50)
-        const totalScore = state.moodScore + state.energyScore; 
-        document.getElementById('final-score').innerText = totalScore;
-        document.getElementById('dashboard-mood-title').innerText = `สภาวะใจ: ${state.moodEmoji} ${state.moodLabel}`;
+    // --- Core Analytic Engine (Logic + - & Sud integration) ---
+    function processAnalyticEngine() {
+        // Core calculation formula
+        let total = appState.moodScore + appState.energyScore; // Max 100
+        
+        // Sudden state penalty integration
+        if(appState.isSudden) {
+            total = Math.max(15, total - 30); // Slashing score heavily if Sudden state is high
+        }
+
+        appState.calculatedScore = total;
+        document.getElementById('final-score').innerText = total;
+        document.getElementById('dashboard-mood-title').innerText = `สภาวะใจ: ${appState.moodEmoji} ${appState.moodLabel}`;
         
         const circle = document.getElementById('final-score-circle');
         const insight = document.getElementById('dashboard-insight');
         const alertZone = document.getElementById('alert-zone');
-        alertZone.style.display = 'none';
-
-        // ปรับการวิเคราะห์ผลตามคะแนน
-        if (totalScore >= 75) {
+        
+        // UI color updates & Adaptive Action recommendation triggers
+        if (total >= 70) {
             circle.style.background = 'var(--success)';
-            insight.innerText = "พลังงานบวกของคุณวันนี้ยอดเยี่ยมมาก! เหมาะแก่การลงมือทำสิ่งใหม่ๆ และส่งต่อรอยยิ้มให้คนรอบข้าง ✨";
-        } else if (totalScore >= 45) {
+            insight.innerText = "พลังงานบวกและคะแนนสมดุลในตัวสูงมาก เหมาะแก่การลงมือทำกิจกรรมที่สร้างสรรค์ แนะนำให้รักษาระดับพลังงานบวกแบบนี้ไว้ด้วยการพักผ่อนอย่างสม่ำเสมอนะครับ";
+        } else if (total >= 40) {
             circle.style.background = 'var(--warning)';
-            insight.innerText = "สภาพจิตใจอยู่ในระดับปานกลาง อาจจะมีเหนื่อยบ้าง ลองหาเวลาพักสายตาสัก 10 นาที ดื่มน้ำเย็นๆ แล้วค่อยไปต่อนะ 🌿";
+            insight.innerText = "จิตใจคุณอยู่ในสภาวะเซฟโซนระดับกลาง แต่อาจมีสภาวะความอ่อนล้าสะสมในตัว แนะนำให้หากิจกรรมผ่อนคลายความเครียดระยะสั้นเพื่อเพิ่มแบตเตอรี่ชีวิต";
         } else {
             circle.style.background = 'var(--danger)';
-            insight.innerText = "ระบบประเมินว่าคุณกำลังแบกรับความกดดันสูง วันนี้อย่าเพิ่งตัดสินใจเรื่องสำคัญ ให้ความสำคัญกับการพักผ่อนและเยียวยาตัวเองก่อนนะ 🤍";
-            
-            // โชว์ป้ายเตือนเฉพาะอารมณ์ด้านลบที่คะแนนต่ำจัด
-            if(['เครียดหนัก', 'กังวลใจ', 'โกรธ / หงุดหงิด', 'เศร้า / เหงา'].includes(state.moodLabel)) {
-                alertZone.style.display = 'block';
-            }
+            insight.innerText = "ระบบประเมินพบระดับความเครียดสะสมสูง หรือระดับพลังงานค่อนข้างต่ำ ควรหยุดพักกิจกรรมที่สร้างแรงกดดัน และระบายอารมณ์ออกมาผ่านแท็บ 'เพิ่มข้อมูล' ได้ทันทีครับ";
         }
 
+        // Action activation checking
+        if (appState.isSudden || total < 35) {
+            alertZone.style.display = 'block';
+        } else {
+            alertZone.style.display = 'none';
+        }
+
+        // Dynamically compute Horoscope predictions based on mood values
+        generateHoroscopeData(total);
+
+        // Transition layout
         document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
         document.getElementById('main-app').classList.add('active');
         
-        // บันทึกการเข้าใช้อัตโนมัติลง Journal
-        saveToLocalStorage("เช็คอินรายวัน", `รู้สึก ${state.moodEmoji} ${state.moodLabel} (พลังงาน ${state.energyScore * 2}%)`);
-        loadJournalHistory();
+        // Save history log (Measure entry point)
+        saveHistoryEntry("ประเมินใจด่วน", `${appState.moodEmoji} ${appState.moodLabel} (คะแนนรวม: ${total})`);
+        loadHistoryLogs();
     }
 
-    // --- Navigation Logic ---
+    // --- Tab Switching Manager ---
     function switchTab(tabName) {
-        document.querySelectorAll('.view-section').forEach(v => {
-            v.classList.remove('active');
-            v.style.display = 'none'; 
-        });
+        document.querySelectorAll('.view-section').forEach(v => v.classList.remove('active'));
         document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
 
-        const targetView = document.getElementById(`view-${tabName}`);
-        targetView.classList.add('active');
-        
-        if(tabName === 'chat') {
-            targetView.style.display = 'flex';
-            setTimeout(() => scrollChatToBottom(), 100);
-        } else {
-            targetView.style.display = 'block';
-        }
-
+        document.getElementById(`view-${tabName}`).classList.add('active');
         document.getElementById(`nav-${tabName}`).classList.add('active');
     }
 
-    // --- Journal Logic ---
+    // --- Horoscope Business Logic ---
+    function generateHoroscopeData(score) {
+        const horoTitle = document.getElementById('horo-title');
+        const horoDesc = document.getElementById('horo-desc');
+        const luckyColor = document.getElementById('lucky-color');
+        const luckyAct = document.getElementById('lucky-act');
+
+        if(score >= 70) {
+            horoTitle.innerText = "ไพ่ The Sun (ความสุขสมบูรณ์)";
+            horoDesc.innerText = "ดวงชะตาจิตใจสว่างไสว ปัญหาที่ติดค้างจะคลี่คลายอย่างน่าอัศจรรย์ เป็นช่วงที่เหมาะกับการเจรจาหรือเริ่มงานใหม่ๆ";
+            luckyColor.innerText = "สีเหลืองมัสตาร์ด / ทอง";
+            luckyAct.innerText = "แบ่งปันรอยยิ้ม หรือทำบุญเล็กๆ";
+        } else if (score >= 40) {
+            horoTitle.innerText = "ไพ่ The Temperance (ความสมดุล)";
+            horoDesc.innerText = "เป็นช่วงเวลาแห่งการปรับสมดุล จิตใจกำลังปรับตัวเข้ากับสิ่งใหม่ๆ อย่ารีบร้อน ทุกอย่างจะลงตัวตามเวลาของมัน";
+            luckyColor.innerText = "สีเขียวมินต์ / ขาวสะอาด";
+            luckyAct.innerText = "จัดโต๊ะทำงานใหม่ / ดื่มชาสมุนไพร";
+        } else {
+            horoTitle.innerText = "ไพ่ The Hermit (การทบทวนตัวเอง)";
+            horoDesc.innerText = "ไพ่แนะให้คุณใช้เวลาอยู่กับความเงียบสงบ หลีกเลี่ยงความวุ่นวายภายนอก ดวงใจชี้ว่าควรถอยออกมาพักเพื่อฟื้นฟูพลังงานภายใน";
+            luckyColor.innerText = "สีน้ำเงินเข้ม / คราม";
+            luckyAct.innerText = "ฟังเพลงคลื่นเสียงบำบัด / ปิดหน้าจอ";
+        }
+    }
+
+    // --- Journal Data Management (More Data / Measure Logic) ---
     function saveJournal() {
-        const input = document.getElementById('journal-input').value.trim();
-        if(!input) return;
-        saveToLocalStorage("บันทึกส่วนตัว", input);
+        const text = document.getElementById('journal-input').value.trim();
+        if(!text) return;
+        saveHistoryEntry("บันทึกระบาย (More Data)", text);
         document.getElementById('journal-input').value = '';
-        
-        // แจ้งเตือนเมื่อบันทึกสำเร็จ
-        const btn = document.querySelector('#view-journal .btn-primary');
-        const originalText = btn.innerText;
-        btn.innerText = "✔️ บันทึกเรียบร้อย";
-        btn.style.background = "var(--success)";
-        setTimeout(() => {
-            btn.innerText = originalText;
-            btn.style.background = "var(--primary)";
-        }, 2000);
-
-        loadJournalHistory();
+        loadHistoryLogs();
     }
 
-    function saveToLocalStorage(type, text) {
-        let history = JSON.parse(localStorage.getItem('pinkjai_v2_history')) || [];
-        const date = new Date();
-        const timeString = `${date.getHours().toString().padStart(2, '0')}:${date.getMinutes().toString().padStart(2, '0')}`;
-        const dateString = `${date.getDate()}/${date.getMonth()+1}`;
+    function saveHistoryEntry(type, text) {
+        let history = JSON.parse(localStorage.getItem('pakpinkjai_v3_database')) || [];
+        const now = new Date();
+        const timestamp = `${now.getDate()}/${now.getMonth()+1} ${now.getHours().toString().padStart(2,'0')}:${now.getMinutes().toString().padStart(2,'0')}`;
         
-        history.unshift({ type, text, time: `${dateString} ${timeString}` });
-        if(history.length > 20) history.pop(); 
-        localStorage.setItem('pinkjai_v2_history', JSON.stringify(history));
+        history.unshift({ type, text, time: timestamp });
+        if(history.length > 25) history.pop(); // Local Storage memory optimization
+        localStorage.setItem('pakpinkjai_v3_database', JSON.stringify(history));
     }
 
-    function loadJournalHistory() {
+    function loadHistoryLogs() {
         const container = document.getElementById('journal-history');
-        const history = JSON.parse(localStorage.getItem('pinkjai_v2_history')) || [];
+        const history = JSON.parse(localStorage.getItem('pakpinkjai_v3_database')) || [];
         
         if(history.length === 0) {
-            container.innerHTML = '<p style="color:var(--text-muted); font-size:0.9rem; text-align:center; padding: 20px 0;">ยังไม่มีบันทึก เริ่มต้นเขียนครั้งแรกได้เลย!</p>';
+            container.innerHTML = '<p style="color:var(--text-muted); font-size:0.85rem; text-align:center; padding: 16px 0;">ไม่มีประวัติการบันทึกข้อมูลใจในขณะนี้</p>';
             return;
         }
 
         container.innerHTML = history.map(item => `
             <div class="log-item">
                 <div class="log-header">
-                    <span style="font-weight:bold; color:var(--primary);">${item.type}</span>
+                    <span style="font-weight:bold; color:var(--primary); font-size:0.85rem;">📌 ${item.type}</span>
                     <span>${item.time}</span>
                 </div>
-                <div style="font-size:0.95rem; line-height: 1.5; color: var(--text-dark);">${item.text}</div>
+                <div style="font-size:0.9rem; line-height:1.4; color: var(--text-dark);">${item.text}</div>
             </div>
         `).join('');
     }
 
-    // --- Chat Logic ---
+    // --- Simulated AI Chatbot Core ---
     function sendChat() {
         const input = document.getElementById('chat-input');
         const text = input.value.trim();
         if(!text) return;
 
-        appendChat(text, 'user');
+        appendChatBubble(text, 'user');
         input.value = '';
 
         setTimeout(() => {
-            let aiResponse = "รับทราบครับ... การได้ระบายออกมาถือเป็นการเริ่มต้นที่ดีนะ คุณเก่งมากแล้วที่จัดการกับความรู้สึกตัวเองในวันนี้";
-             if(text.includes("เครียด") || text.includes("เหนื่อย") || text.includes("ท้อ") || text.includes("ไม่ไหว")) {
-                aiResponse = "เข้าใจเลยครับว่ามันหนักหนา ลองสูดหายใจลึกๆ ดูนะ วันนี้ไม่ต้องฝืนทำอะไรที่เกินตัว พักผ่อนให้เต็มที่ครับ";
-            } else if(text.includes("ดี") || text.includes("โอเค") || text.includes("สุข") || text.includes("เยี่ยม")) {
-                aiResponse = "ดีใจที่ได้ยินแบบนั้นครับ! เก็บความรู้สึกดีๆ นี้ไว้เป็นพลังงานบวกสำหรับวันพรุ่งนี้นะครับ";
-            } else if(text.includes("โกรธ") || text.includes("หงุดหงิด")) {
-                aiResponse = "ตอนที่โกรธ ร่างกายเราจะสูบฉีดเลือดเร็วมาก ลองดื่มน้ำเย็นๆ สักแก้ว แล้วทิ้งระยะห่างจากสิ่งที่ทำให้โกรธสัก 10 นาทีดีไหมครับ?";
+            let aiResponse = "ระบบ AI ได้รับข้อความแล้วครับ ผมพร้อมอยู่เคียงข้างและคอยรับฟังสิ่งที่คุณเผชิญเสมอ เพื่อให้คุณสบายใจขึ้นนะ";
+            if(text.includes("เครียด") || text.includes("ดิ่ง") || text.includes("เหนื่อย")) {
+                aiResponse = "สภาวะใจของคุณช่วงนี้อาจล้ามาก ลองหลับตาลงสัก 1 นาที ไม่จำเป็นต้องคิดแก้ไขเรื่องใดในตอนนี้เลยนะครับ คุณทำดีที่สุดแล้ว";
+            } else if (text.includes("มู") || text.includes("ดวง") || text.includes("โชค")) {
+                aiResponse = "หากต้องการคำทำนายเพิ่มความมั่นใจ สามารถแวะไปเปิดหน้า 'สายมู' เพื่อดูสีมงคลและคำทำแนะนำนำทางชีวิตของวันได้เลยครับ";
             }
-            
-            appendChat(aiResponse, 'bot');
-        }, 1200);
+            appendChatBubble(aiResponse, 'bot');
+        }, 1100);
     }
 
-    function appendChat(text, sender) {
+    function appendChatBubble(text, sender) {
         const box = document.getElementById('chat-box');
         const bubble = document.createElement('div');
         bubble.className = `chat-bubble ${sender}`;
         bubble.innerText = text;
-        
-        bubble.style.opacity = 0;
-        bubble.style.transform = "translateY(10px)";
-        bubble.style.transition = "all 0.3s ease";
-        
         box.appendChild(bubble);
-        
-        setTimeout(() => {
-            bubble.style.opacity = 1;
-            bubble.style.transform = "translateY(0)";
-            scrollChatToBottom();
-        }, 50);
-    }
-
-    function scrollChatToBottom() {
-        const viewChat = document.getElementById('view-chat');
-        viewChat.scrollTop = viewChat.scrollHeight;
+        box.scrollTop = box.scrollHeight;
     }
 </script>
 
